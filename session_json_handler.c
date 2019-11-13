@@ -109,8 +109,6 @@ PS_SERIALIZER_DECODE_FUNC(json) /* {{{ */
 	const char *endptr = val + vallen;
 	zval *session_vars;
 
-	ALLOC_INIT_ZVAL(session_vars);
-
 	php_json_decode_ex(session_vars, (char *)val, vallen, PHP_JSON_OBJECT_AS_ARRAY, 512);
 
 	if (&PS(http_session_vars))
