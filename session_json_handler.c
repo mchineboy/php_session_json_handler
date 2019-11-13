@@ -98,9 +98,9 @@ PS_SERIALIZER_ENCODE_FUNC(json) /* {{{ */
 	php_json_encode(&buf, &PS(http_session_vars), 0);
 	//php_var_serialize(smart_str *buf, zval **struc, php_serialize_data_t *var_hash TSRMLS_DC);
 	//PHP_VAR_SERIALIZE_DESTROY(var_hash);
-	if (newlen)
+	if (mbrlen)
 	{
-		*newlen = buf.len;
+		*mbrlen = buf.len;
 	}
 	smart_str_0(&buf);
 	*newstr = buf.c;
