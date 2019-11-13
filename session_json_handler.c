@@ -90,21 +90,17 @@ static void php_session_json_handler_init_globals(zend_session_json_handler_glob
 *************** */
 PS_SERIALIZER_ENCODE_FUNC(json) /* {{{ */
 {
-	smart_str buf = {0};
-	//php_serialize_data_t var_hash;
+	zval *session_vars;
+	zend_string *result;
 
-	//PHP_VAR_SERIALIZE_INIT(var_hash);
-	//php_var_serialize(&buf, &PS(http_session_vars), &var_hash TSRMLS_CC);
-	php_json_encode(&buf, &PS(http_session_vars), 0);
-	//php_var_serialize(smart_str *buf, zval **struc, php_serialize_data_t *var_hash TSRMLS_DC);
-	//PHP_VAR_SERIALIZE_DESTROY(var_hash);
-	if (mbrlen)
-	{
-		*mbrlen = buf.len;
-	}
-	smart_str_0(&buf);
-	*newstr = buf.c;
-	return SUCCESS;
+	session_vars = &(PS(http_session_vars));
+
+	smart_str buf = {0};
+
+	php_json_encode(&buf, session_vars, 0);
+
+	result = zend_string_init((const char *)buf.s, ZSTR_LEN(buf.s), 0);
+	return result;
 }
 /* }}} */
 
@@ -117,7 +113,7 @@ PS_SERIALIZER_DECODE_FUNC(json) /* {{{ */
 
 	php_json_decode_ex(session_vars, (char *)val, vallen, PHP_JSON_OBJECT_AS_ARRAY, 512);
 
-	if (PS(http_session_vars))
+	if (&PS(http_session_vars))
 	{
 		zval_ptr_dtor(&PS(http_session_vars));
 	}
@@ -125,8 +121,8 @@ PS_SERIALIZER_DECODE_FUNC(json) /* {{{ */
 	{
 		array_init(session_vars);
 	}
-	PS(http_session_vars) = session_vars;
-	ZEND_SET_GLOBAL_VAR_WITH_LENGTH("_SESSION", sizeof("_SESSION"), PS(http_session_vars), 2, 1);
+	ps_globals.http_session_vars = *session_vars;
+	ZEND_SET_GLOBAL_VAR_WITH_LENGTH("_SESSION", sizeof("_SESSION"), &PS(http_session_vars), 2, 1);
 	return SUCCESS;
 }
 /* }}} */
