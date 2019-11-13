@@ -59,7 +59,8 @@ PHP_FUNCTION(confirm_session_json_handler_compiled)
 	int arg_len, len;
 	char *strg;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE)
+	{
 		return;
 	}
 
@@ -72,7 +73,6 @@ PHP_FUNCTION(confirm_session_json_handler_compiled)
    function definition, where the functions purpose is also documented. Please 
    follow this convention for the convenience of others editing your code.
 */
-
 
 /* {{{ php_session_json_handler_init_globals
  */
@@ -87,46 +87,49 @@ static void php_session_json_handler_init_globals(zend_session_json_handler_glob
 
 /* ***************                                                                                                      
 * Serializers *                                                                                                      
-*************** */                                                                                                   
-PS_SERIALIZER_ENCODE_FUNC(json) /* {{{ */                                                                      
-{                                                                                                                       
-	smart_str buf = {0};                                                                                                
-	//php_serialize_data_t var_hash;                                                                                      
+*************** */
+PS_SERIALIZER_ENCODE_FUNC(json) /* {{{ */
+{
+	smart_str buf = {0};
+	//php_serialize_data_t var_hash;
 
-	//PHP_VAR_SERIALIZE_INIT(var_hash);                                                                                   
-	//php_var_serialize(&buf, &PS(http_session_vars), &var_hash TSRMLS_CC);                                               
-	php_json_encode(&buf, PS(http_session_vars), 0); 
+	//PHP_VAR_SERIALIZE_INIT(var_hash);
+	//php_var_serialize(&buf, &PS(http_session_vars), &var_hash TSRMLS_CC);
+	php_json_encode(&buf, &PS(http_session_vars), 0);
 	//php_var_serialize(smart_str *buf, zval **struc, php_serialize_data_t *var_hash TSRMLS_DC);
-	//PHP_VAR_SERIALIZE_DESTROY(var_hash);                                                                                
-	if (newlen) {                                                                                                       
-		*newlen = buf.len;                                                                                              
-	}                                                                                                                   
-	smart_str_0(&buf);                                                                                                  
-	*newstr = buf.c;                                                                                                    
-	return SUCCESS;                                                                                                     
-}                                                                                                                       
-/* }}} */                                                                                                               
+	//PHP_VAR_SERIALIZE_DESTROY(var_hash);
+	if (newlen)
+	{
+		*newlen = buf.len;
+	}
+	smart_str_0(&buf);
+	*newstr = buf.c;
+	return SUCCESS;
+}
+/* }}} */
 
-PS_SERIALIZER_DECODE_FUNC(json) /* {{{ */                                                                      
-{                                                                                                                       
-	const char *endptr = val + vallen;                                                                                  
-	zval *session_vars;                                                                                                 
+PS_SERIALIZER_DECODE_FUNC(json) /* {{{ */
+{
+	const char *endptr = val + vallen;
+	zval *session_vars;
 
-	ALLOC_INIT_ZVAL(session_vars);                                                                                      
+	ALLOC_INIT_ZVAL(session_vars);
 
-	php_json_decode_ex(session_vars, (char *)val, vallen, PHP_JSON_OBJECT_AS_ARRAY , 512);
+	php_json_decode_ex(session_vars, (char *)val, vallen, PHP_JSON_OBJECT_AS_ARRAY, 512);
 
-	if (PS(http_session_vars)) {                                                                                        
-		zval_ptr_dtor(&PS(http_session_vars));                                                                          
-	}                                                                                                                   
-	if (Z_TYPE_P(session_vars) == IS_NULL) {                                                                            
-		array_init(session_vars);                                                                                       
-	}                                                                                                                   
-	PS(http_session_vars) = session_vars;                                                                               
-	ZEND_SET_GLOBAL_VAR_WITH_LENGTH("_SESSION", sizeof("_SESSION"), PS(http_session_vars), 2, 1);                       
-	return SUCCESS;                                                                                                     
-}                                                                                                                       
-/* }}} */      
+	if (PS(http_session_vars))
+	{
+		zval_ptr_dtor(&PS(http_session_vars));
+	}
+	if (Z_TYPE_P(session_vars) == IS_NULL)
+	{
+		array_init(session_vars);
+	}
+	PS(http_session_vars) = session_vars;
+	ZEND_SET_GLOBAL_VAR_WITH_LENGTH("_SESSION", sizeof("_SESSION"), PS(http_session_vars), 2, 1);
+	return SUCCESS;
+}
+/* }}} */
 
 /* {{{ PHP_MINIT_FUNCTION
  */
@@ -135,9 +138,9 @@ PHP_MINIT_FUNCTION(session_json_handler)
 	/* If you have INI entries, uncomment these lines 
 	REGISTER_INI_ENTRIES();
 	*/
-	php_session_register_serializer("json",                                                                             
-	PS_SERIALIZER_ENCODE_NAME(json),                                                    
-	PS_SERIALIZER_DECODE_NAME(json));
+	php_session_register_serializer("json",
+									PS_SERIALIZER_ENCODE_NAME(json),
+									PS_SERIALIZER_DECODE_NAME(json));
 	return SUCCESS;
 }
 /* }}} */
@@ -190,8 +193,8 @@ PHP_MINFO_FUNCTION(session_json_handler)
  * Every user visible function must have an entry in session_json_handler_functions[].
  */
 const zend_function_entry session_json_handler_functions[] = {
-	PHP_FE(confirm_session_json_handler_compiled,	NULL)		/* For testing, remove later. */
-	PHP_FE_END	/* Must be the last line in session_json_handler_functions[] */
+	PHP_FE(confirm_session_json_handler_compiled, NULL) /* For testing, remove later. */
+	PHP_FE_END											/* Must be the last line in session_json_handler_functions[] */
 };
 /* }}} */
 
@@ -203,12 +206,11 @@ zend_module_entry session_json_handler_module_entry = {
 	session_json_handler_functions,
 	PHP_MINIT(session_json_handler),
 	PHP_MSHUTDOWN(session_json_handler),
-	PHP_RINIT(session_json_handler),		/* Replace with NULL if there's nothing to do at request start */
-	PHP_RSHUTDOWN(session_json_handler),	/* Replace with NULL if there's nothing to do at request end */
+	PHP_RINIT(session_json_handler),	 /* Replace with NULL if there's nothing to do at request start */
+	PHP_RSHUTDOWN(session_json_handler), /* Replace with NULL if there's nothing to do at request end */
 	PHP_MINFO(session_json_handler),
 	PHP_SESSION_JSON_HANDLER_VERSION,
-	STANDARD_MODULE_PROPERTIES
-};
+	STANDARD_MODULE_PROPERTIES};
 /* }}} */
 
 #ifdef COMPILE_DL_SESSION_JSON_HANDLER
