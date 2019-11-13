@@ -120,7 +120,6 @@ PS_SERIALIZER_DECODE_FUNC(json) /* {{{ */
 		array_init(session_vars);
 	}
 	ps_globals.http_session_vars = *session_vars;
-	ZEND_SET_GLOBAL_VAR_WITH_LENGTH("_SESSION", sizeof("_SESSION"), &PS(http_session_vars), 2, 1);
 	return SUCCESS;
 }
 /* }}} */
